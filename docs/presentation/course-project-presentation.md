@@ -38,6 +38,7 @@ BrightSmile ADS: Dental Surgery Appointment Webapp
 
 - MySQL tables: patients, dentists, surgeries, addresses, appointments, dental_bills, app_users, roles.
 - Hibernate creates/updates tables automatically in the cloud when `DDL_AUTO=update`.
+- `ClinicSeedService` inserts demo data only when the database is empty, so cloud data persists after restart.
 - Important constraints include unique patient numbers, dentist codes, surgery numbers, and dentist appointment slots.
 
 ## Slide 6: Solution Architecture

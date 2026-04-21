@@ -78,4 +78,4 @@ Open:
 http://18.221.0.62:8080
 ```
 
-The cloud demo uses a real MySQL 8.4 container. Hibernate creates tables automatically and the seed service inserts demo data automatically.
+The cloud demo uses a real MySQL 8.4 container. Hibernate creates tables automatically and the seed service inserts demo data only when the database is empty, so user-created data persists across app container restarts.

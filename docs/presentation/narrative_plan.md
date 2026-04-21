@@ -33,7 +33,7 @@ Source plan:
 - Project artefacts under `docs`.
 - Runtime/deployment files: `Dockerfile`, `docker-compose.yml`, `.github/workflows/maven-ci.yml`.
 - Cloud runtime: AWS EC2 `t3.medium`, Docker Compose, Spring Boot app container, MySQL 8.4 container.
-- Demo data source: `ClinicSeedService` inserts users, patients, dentists, surgeries, appointments, and bills when `SEED_ENABLED=true`.
+- Demo data source: `ClinicSeedService` inserts users, patients, dentists, surgeries, appointments, and bills when `SEED_ENABLED=true` and the database is empty.
 
 Visual system:
 

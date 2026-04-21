@@ -23,7 +23,7 @@ Cloud demo deployment:
 - Spring Boot runs as one container.
 - MySQL 8.4 runs as one container.
 - Hibernate creates tables automatically.
-- Seed service inserts demo data automatically.
+- Seed service inserts demo data automatically only when the database is empty.
 
 Logical layers:
 

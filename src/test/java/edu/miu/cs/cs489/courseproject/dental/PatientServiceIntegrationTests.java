@@ -28,7 +28,7 @@ class PatientServiceIntegrationTests {
 
     @BeforeEach
     void setUp() {
-        clinicSeedService.seedDemoData();
+        clinicSeedService.resetDemoData();
     }
 
     @Test

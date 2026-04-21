@@ -67,7 +67,7 @@ class DentalSurgeryApiIntegrationTests {
 
     @BeforeEach
     void setUp() {
-        clinicSeedService.seedDemoData();
+        clinicSeedService.resetDemoData();
     }
 
     @Test

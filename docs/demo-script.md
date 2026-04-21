@@ -48,7 +48,8 @@ For local fallback, run `mvn spring-boot:run` and open `http://localhost:8080`.
 7. Cloud Deployment
    - Mention that the live demo is running on AWS EC2.
    - Docker Compose starts two containers: Spring Boot app and MySQL 8.4.
-   - Hibernate creates the MySQL tables automatically and `ClinicSeedService` inserts demo data automatically.
+   - Hibernate creates the MySQL tables automatically and `ClinicSeedService` inserts demo data only when the database is empty.
+   - User-created patients, bills, and appointments stay in the MySQL Docker volume across Spring Boot restarts.
 
 ## Code Walkthrough Pointers
 

@@ -58,8 +58,18 @@ public class ClinicSeedService {
     }
 
     public void seedDemoData() {
-        clearData();
+        if (hasAnyData()) {
+            return;
+        }
+        seedFixture();
+    }
 
+    public void resetDemoData() {
+        clearData();
+        seedFixture();
+    }
+
+    private void seedFixture() {
         Role officeManagerRole = roleRepository.save(
                 new Role("OFFICE_MANAGER", "Registers patients and schedules dental appointments"));
         Role administratorRole = roleRepository.save(
@@ -140,8 +150,18 @@ public class ClinicSeedService {
                 new DentalBill(ianMacKay, appointments.get(2), LocalDate.now().minusDays(2),
                         new BigDecimal("300.00"), BillStatus.UNPAID, "Root canal treatment follow-up"),
                 new DentalBill(mariaLopez, null, LocalDate.now().minusDays(8),
-                        new BigDecimal("180.00"), BillStatus.UNPAID, "Outstanding balance from previous procedure")
+                new BigDecimal("180.00"), BillStatus.UNPAID, "Outstanding balance from previous procedure")
         ));
+    }
+
+    private boolean hasAnyData() {
+        return roleRepository.count() > 0
+                || appUserRepository.count() > 0
+                || dentistRepository.count() > 0
+                || surgeryRepository.count() > 0
+                || patientRepository.count() > 0
+                || appointmentRepository.count() > 0
+                || dentalBillRepository.count() > 0;
     }
 
     private void clearData() {

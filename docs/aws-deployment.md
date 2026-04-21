@@ -36,7 +36,7 @@ SEED_ENABLED: "true"
 
 Because `DDL_AUTO=update`, Hibernate creates the database tables automatically.
 
-Because `SEED_ENABLED=true`, the app inserts demo data automatically at startup.
+Because `SEED_ENABLED=true`, the app inserts demo data automatically only when the database is empty. Existing cloud data is preserved across Spring Boot container restarts because MySQL data is stored in the Docker volume `dental-surgery-mysql-data`.
 
 Demo login:
 
@@ -150,11 +150,13 @@ docker compose down -v
 docker compose up --build -d
 ```
 
+Only use `docker compose down -v` if you intentionally want to delete all MySQL data and recreate the original demo dataset.
+
 ## Teacher Explanation
 
 You can say:
 
-> For local development, the app can run with H2 for convenience. For cloud demo, I deployed it on AWS EC2 using Docker Compose. The cloud environment runs a real MySQL 8.4 container. Hibernate automatically creates the tables, and the Spring Boot seed service automatically inserts demo users, patients, dentists, surgeries, appointments, and bills.
+> For local development, the app can run with H2 for convenience. For cloud demo, I deployed it on AWS EC2 using Docker Compose. The cloud environment runs a real MySQL 8.4 container. Hibernate automatically creates the tables, and the Spring Boot seed service inserts demo users, patients, dentists, surgeries, appointments, and bills only when the database is empty. After that, user-created data stays in the MySQL Docker volume across application restarts.
 
 ## One-Day Cost Estimate
 

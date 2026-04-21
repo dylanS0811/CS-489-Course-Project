@@ -54,7 +54,7 @@ Demo users:
 | `HainingSong` | `welcome1` | OFFICE_MANAGER |
 | `ethan.reed` | `welcome1` | ADMINISTRATOR |
 
-By default the app uses an in-memory H2 database and seeds demo data at startup.
+By default the app uses an in-memory H2 database and seeds demo data when the database is empty.
 
 ## Run Tests
 
@@ -118,6 +118,12 @@ Billing:
 - `GET /api/v1/bills?status=UNPAID`
 - `POST /api/v1/bills`
 - `PATCH /api/v1/bills/{billId}/status`
+
+Billing statuses:
+
+- `UNPAID`: outstanding balance; patient cannot book a new appointment.
+- `PAID`: settled balance; patient can book normally.
+- `VOID`: cancelled/invalid bill created by mistake; not counted as unpaid and does not block booking.
 
 Directory/dashboard:
 
