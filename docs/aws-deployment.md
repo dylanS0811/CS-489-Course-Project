@@ -49,17 +49,19 @@ Password: welcome1
 
 ### 1. Create EC2 Instance
 
-Recommended:
+Recommended for a stable course demo:
 
 ```text
 AMI: Amazon Linux 2023
-Instance type: t2.micro or t3.micro
+Instance type: t3.medium
 Security group inbound rules:
   SSH 22
   Custom TCP 8080
 ```
 
 Port `8080` must be open so the web app can be viewed in a browser.
+
+`t3.micro` can run the app after startup, but it may become slow during Docker/Maven build because the project starts both Java and MySQL. `t3.medium` is the simplest stable choice for a one-day presentation demo.
 
 ### 2. SSH Into EC2
 
@@ -153,3 +155,15 @@ docker compose up --build -d
 You can say:
 
 > For local development, the app can run with H2 for convenience. For cloud demo, I deployed it on AWS EC2 using Docker Compose. The cloud environment runs a real MySQL 8.4 container. Hibernate automatically creates the tables, and the Spring Boot seed service automatically inserts demo users, patients, dentists, surgeries, appointments, and bills.
+
+## One-Day Cost Estimate
+
+For the current EC2 setup in the Ohio region:
+
+```text
+t3.medium Linux: about $0.0416/hour, about $1.00/day
+Public IPv4: about $0.005/hour, about $0.12/day
+20 GB gp3 EBS volume: only a few cents for one day
+```
+
+For a one-day teacher demo, the total is roughly $1.10 to $1.50, excluding unusual data transfer. Stop or terminate the instance after submission to avoid continued charges.

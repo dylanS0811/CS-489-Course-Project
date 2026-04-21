@@ -15,10 +15,14 @@ Submit these two URLs in the Sakai text box:
 
 ```text
 GitHub repository:
-<paste-your-github-repository-url-here>
+https://github.com/dylanS0811/CS-489-Course-Project
 
 Deployed web application:
-http://<EC2_PUBLIC_IP>:8080
+http://18.221.0.62:8080
+
+Demo login:
+Username: HainingSong
+Password: welcome1
 ```
 
 If the instructor asks for an attachment, attach the generated zip:
@@ -71,7 +75,7 @@ docker compose up --build -d
 Open:
 
 ```text
-http://<EC2_PUBLIC_IP>:8080
+http://18.221.0.62:8080
 ```
 
 The cloud demo uses a real MySQL 8.4 container. Hibernate creates tables automatically and the seed service inserts demo data automatically.

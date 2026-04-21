@@ -4,9 +4,11 @@ Target length: 3 minutes for the live demo section.
 
 ## Setup
 
-1. Run `mvn spring-boot:run`.
-2. Open `http://localhost:8080`.
+1. Keep the EC2 instance running.
+2. Open `http://18.221.0.62:8080`.
 3. Sign in with `HainingSong / welcome1`.
+
+For local fallback, run `mvn spring-boot:run` and open `http://localhost:8080`.
 
 ## Demo Flow
 
@@ -30,19 +32,31 @@ Target length: 3 minutes for the live demo section.
    - Pick a future date/time and submit.
    - Show confirmation flag and new row.
 
-5. Business Rule Demo
-   - Try booking patient `P108`.
-   - The system rejects the appointment because P108 has an unpaid bill.
+5. Billing and Business Rule Demo
+   - Open Billing.
+   - Create an `UNPAID` bill for a patient.
+   - Try scheduling that patient.
+   - The system rejects the appointment because the patient has an unpaid bill.
+   - Mark the bill `PAID`.
+   - Schedule again and show the appointment can now be created.
    - Mention that this is enforced in `AppointmentService`, not only in the UI.
 
 6. Security
    - Sign out.
    - Mention that API endpoints return HTTP 401 without a JWT.
 
+7. Cloud Deployment
+   - Mention that the live demo is running on AWS EC2.
+   - Docker Compose starts two containers: Spring Boot app and MySQL 8.4.
+   - Hibernate creates the MySQL tables automatically and `ClinicSeedService` inserts demo data automatically.
+
 ## Code Walkthrough Pointers
 
 - Domain entities: `src/main/java/.../domain`
 - DTOs: `src/main/java/.../dto`
 - Business rules: `AppointmentService`
+- Billing workflow: `BillingService`, `BillingController`
 - Security: `SecurityConfig`, `JwtAuthenticationFilter`, `JwtService`
 - Tests: `DentalSurgeryApiIntegrationTests`
+- Seed data: `ClinicSeedService`
+- Deployment: `Dockerfile`, `docker-compose.yml`, `docs/aws-deployment.md`

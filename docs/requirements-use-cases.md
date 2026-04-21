@@ -11,12 +11,14 @@
 7. The system shall maintain surgery records with surgery number, name, phone, and address.
 8. The system shall allow staff to schedule a dental appointment for a patient.
 9. The system shall record appointment date, time, status, reason, patient, dentist, surgery, booked-by user, and confirmation flag.
-10. The system shall prevent a patient with an unpaid bill from booking a new appointment.
-11. The system shall prevent a dentist from being double-booked at the same date and time.
-12. The system shall prevent a dentist from having more than five active appointments in one week.
-13. The system shall allow staff to cancel appointments.
-14. The system shall expose DTO-based REST APIs for the frontend and tests.
-15. The system shall seed realistic demo data for presentation and local testing.
+10. The system shall allow staff to create dental-service bills for patients.
+11. The system shall allow staff to filter bills by payment status and update a bill to paid, unpaid, or void.
+12. The system shall prevent a patient with an unpaid bill from booking a new appointment.
+13. The system shall prevent a dentist from being double-booked at the same date and time.
+14. The system shall prevent a dentist from having more than five active appointments in one week.
+15. The system shall allow staff to cancel appointments.
+16. The system shall expose DTO-based REST APIs for the frontend and tests.
+17. The system shall seed realistic demo data for presentation and local testing.
 
 ## Nonfunctional Requirements
 
@@ -98,3 +100,20 @@ Main flow:
 2. User cancels a selected appointment.
 3. System changes status to `CANCELLED`.
 4. Updated appointment list is displayed.
+
+## Use Case 6: Manage Dental Bills
+
+Primary actor: Office Manager
+
+Main flow:
+
+1. User opens Billing.
+2. User selects a patient, optional appointment, issue date, amount, status, and description.
+3. System validates the request and stores the dental-service bill.
+4. User filters bills by status.
+5. User marks an unpaid bill as paid.
+6. Dashboard unpaid-bill count and appointment eligibility update after refresh.
+
+Alternative flow:
+
+- If a bill is marked `UNPAID`, the patient cannot schedule a new appointment until the bill is changed to `PAID` or `VOID`.

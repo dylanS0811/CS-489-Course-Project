@@ -52,6 +52,7 @@
         <nav class="tabs" aria-label="Workspace sections">
             <button class="tab active" data-tab="dashboard" type="button">Dashboard</button>
             <button class="tab" data-tab="appointments" type="button">Appointments</button>
+            <button class="tab" data-tab="billing" type="button">Billing</button>
             <button class="tab" data-tab="patients" type="button">Patients</button>
             <button class="tab" data-tab="newPatient" type="button">New Patient</button>
         </nav>
@@ -121,6 +122,69 @@
                     </tr>
                     </thead>
                     <tbody id="appointmentRows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="billing" class="tab-panel">
+            <form id="billForm" class="form-grid">
+                <label>
+                    Patient
+                    <select id="billPatient" required></select>
+                </label>
+                <label>
+                    Related Appointment
+                    <select id="billAppointment"></select>
+                </label>
+                <label>
+                    Issue Date
+                    <input id="billIssueDate" type="date" required>
+                </label>
+                <label>
+                    Amount
+                    <input id="billAmount" type="number" min="0.01" step="0.01" value="120.00" required>
+                </label>
+                <label>
+                    Status
+                    <select id="billStatus" required>
+                        <option value="UNPAID">UNPAID</option>
+                        <option value="PAID">PAID</option>
+                        <option value="VOID">VOID</option>
+                    </select>
+                </label>
+                <label class="wide-field">
+                    Description
+                    <input id="billDescription" value="Dental service balance" required>
+                </label>
+                <button type="submit">Create Bill</button>
+            </form>
+
+            <div class="section-heading split-heading">
+                <h3>Dental Service Bills</h3>
+                <label class="compact-filter">
+                    Status
+                    <select id="billStatusFilter">
+                        <option value="">All</option>
+                        <option value="UNPAID">Unpaid only</option>
+                        <option value="PAID">Paid only</option>
+                        <option value="VOID">Void only</option>
+                    </select>
+                </label>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Appointment</th>
+                        <th>Issue Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="billRows"></tbody>
                 </table>
             </div>
         </section>

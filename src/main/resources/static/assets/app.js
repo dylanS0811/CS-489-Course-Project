@@ -4,7 +4,8 @@ const state = {
     patients: [],
     dentists: [],
     surgeries: [],
-    appointments: []
+    appointments: [],
+    bills: []
 };
 
 const byId = (id) => document.getElementById(id);
@@ -90,21 +91,24 @@ async function loadAll() {
         setSignedInUi();
         return;
     }
-    const [dashboard, patients, dentists, surgeries, appointments] = await Promise.all([
+    const [dashboard, patients, dentists, surgeries, appointments, bills] = await Promise.all([
         api("/api/v1/dashboard"),
         api("/api/v1/patients"),
         api("/api/v1/dentists"),
         api("/api/v1/surgeries"),
-        api("/api/v1/appointments")
+        api("/api/v1/appointments"),
+        api("/api/v1/bills")
     ]);
 
     state.patients = patients;
     state.dentists = dentists;
     state.surgeries = surgeries;
     state.appointments = appointments;
+    state.bills = bills;
     renderDashboard(dashboard);
     renderPatients(patients);
     renderAppointments(appointments);
+    renderBills();
     fillSelects();
 }
 
@@ -151,6 +155,48 @@ function renderAppointments(appointments) {
     byId("appointmentRows").innerHTML = rowsForAppointments(appointments, true);
 }
 
+function formatMoney(amount) {
+    return Number(amount).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD"
+    });
+}
+
+function renderBills() {
+    const selectedStatus = byId("billStatusFilter").value;
+    const bills = selectedStatus
+        ? state.bills.filter((bill) => bill.status === selectedStatus)
+        : state.bills;
+
+    if (!bills.length) {
+        byId("billRows").innerHTML = "<tr><td colspan=\"7\">No bills found.</td></tr>";
+        return;
+    }
+
+    byId("billRows").innerHTML = bills.map((bill) => {
+        const statusClass = bill.status.toLowerCase();
+        const primaryAction = bill.status === "UNPAID"
+            ? `<button class="link-button" data-bill="${bill.billId}" data-status="PAID" type="button">Mark Paid</button>`
+            : bill.status === "PAID"
+                ? `<button class="link-button" data-bill="${bill.billId}" data-status="UNPAID" type="button">Mark Unpaid</button>`
+                : "";
+        const voidAction = bill.status !== "VOID"
+            ? `<button class="link-button quiet-button" data-bill="${bill.billId}" data-status="VOID" type="button">Void</button>`
+            : "";
+        return `
+            <tr>
+                <td>${bill.patient.patientNumber} - ${bill.patient.fullName}</td>
+                <td>${bill.appointmentLabel}</td>
+                <td>${bill.issueDate}</td>
+                <td>${formatMoney(bill.amount)}</td>
+                <td><span class="status ${statusClass}">${bill.status}</span></td>
+                <td>${bill.description}</td>
+                <td class="action-cell">${primaryAction}${voidAction}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
 function renderPatients(patients) {
     if (!patients.length) {
         byId("patientRows").innerHTML = "<tr><td colspan=\"5\">No patients found.</td></tr>";
@@ -177,6 +223,21 @@ function fillSelects() {
     byId("appointmentSurgery").innerHTML = state.surgeries
         .map((surgery) => `<option value="${surgery.surgeryId}">${surgery.surgeryNumber} - ${surgery.name}</option>`)
         .join("");
+    byId("billPatient").innerHTML = state.patients
+        .map((patient) => `<option value="${patient.patientId}">${patient.patientNumber} - ${patient.fullName}</option>`)
+        .join("");
+    fillBillAppointmentSelect();
+}
+
+function fillBillAppointmentSelect() {
+    const patientId = Number(byId("billPatient").value);
+    const appointmentOptions = state.appointments
+        .filter((appointment) => appointment.patient.patientId === patientId)
+        .map((appointment) => `<option value="${appointment.appointmentId}">
+            ${appointment.appointmentDate} ${appointment.appointmentTime} - ${appointment.dentist.fullName}
+        </option>`)
+        .join("");
+    byId("billAppointment").innerHTML = `<option value="">Manual bill / no appointment</option>${appointmentOptions}`;
 }
 
 async function scheduleAppointment(event) {
@@ -234,6 +295,34 @@ async function createPatient(event) {
     }
 }
 
+async function createBill(event) {
+    event.preventDefault();
+    try {
+        const appointmentId = byId("billAppointment").value;
+        await api("/api/v1/bills", {
+            method: "POST",
+            body: JSON.stringify({
+                patientId: Number(byId("billPatient").value),
+                appointmentId: appointmentId ? Number(appointmentId) : null,
+                issueDate: byId("billIssueDate").value,
+                amount: Number(byId("billAmount").value),
+                status: byId("billStatus").value,
+                description: byId("billDescription").value
+            })
+        });
+        byId("billForm").reset();
+        byId("billAmount").value = "120.00";
+        byId("billStatus").value = "UNPAID";
+        byId("billDescription").value = "Dental service balance";
+        setDefaultBillIssueDate();
+        await loadAll();
+        showMessage("Dental bill created. Unpaid bills will block new appointment booking.", "success");
+        selectTab("billing");
+    } catch (error) {
+        showMessage(error.message, "error");
+    }
+}
+
 async function searchPatients(event) {
     event.preventDefault();
     try {
@@ -255,6 +344,20 @@ async function cancelAppointment(appointmentId) {
     }
 }
 
+async function updateBillStatus(billId, status) {
+    try {
+        await api(`/api/v1/bills/${billId}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({status})
+        });
+        await loadAll();
+        showMessage(`Bill status updated to ${status}.`, "success");
+        selectTab("billing");
+    } catch (error) {
+        showMessage(error.message, "error");
+    }
+}
+
 function selectTab(name) {
     document.querySelectorAll(".tab").forEach((tab) => {
         tab.classList.toggle("active", tab.dataset.tab === name);
@@ -270,6 +373,10 @@ function setDefaultAppointmentDate() {
     byId("appointmentDate").value = tomorrow.toISOString().slice(0, 10);
 }
 
+function setDefaultBillIssueDate() {
+    byId("billIssueDate").value = new Date().toISOString().slice(0, 10);
+}
+
 document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => selectTab(tab.dataset.tab));
 });
@@ -278,6 +385,9 @@ byId("loginForm").addEventListener("submit", login);
 byId("logoutButton").addEventListener("click", logout);
 byId("refreshButton").addEventListener("click", () => loadAll().catch((error) => showMessage(error.message, "error")));
 byId("appointmentForm").addEventListener("submit", scheduleAppointment);
+byId("billForm").addEventListener("submit", createBill);
+byId("billPatient").addEventListener("change", fillBillAppointmentSelect);
+byId("billStatusFilter").addEventListener("change", renderBills);
 byId("patientForm").addEventListener("submit", createPatient);
 byId("searchForm").addEventListener("submit", searchPatients);
 byId("appointmentRows").addEventListener("click", (event) => {
@@ -286,7 +396,15 @@ byId("appointmentRows").addEventListener("click", (event) => {
         cancelAppointment(appointmentId);
     }
 });
+byId("billRows").addEventListener("click", (event) => {
+    const billId = event.target.dataset.bill;
+    const status = event.target.dataset.status;
+    if (billId && status) {
+        updateBillStatus(billId, status);
+    }
+});
 
 setDefaultAppointmentDate();
+setDefaultBillIssueDate();
 setSignedInUi();
 loadAll().catch(() => setSignedInUi());

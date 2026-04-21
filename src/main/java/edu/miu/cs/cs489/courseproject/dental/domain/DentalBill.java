@@ -82,6 +82,10 @@ public class DentalBill {
         return status;
     }
 
+    public void setStatus(BillStatus status) {
+        this.status = status;
+    }
+
     public String getDescription() {
         return description;
     }

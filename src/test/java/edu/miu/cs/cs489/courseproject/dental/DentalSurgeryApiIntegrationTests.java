@@ -2,12 +2,15 @@ package edu.miu.cs.cs489.courseproject.dental;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.miu.cs.cs489.courseproject.dental.domain.BillStatus;
 import edu.miu.cs.cs489.courseproject.dental.domain.Dentist;
 import edu.miu.cs.cs489.courseproject.dental.domain.Patient;
 import edu.miu.cs.cs489.courseproject.dental.domain.Surgery;
 import edu.miu.cs.cs489.courseproject.dental.dto.address.AddressRequest;
 import edu.miu.cs.cs489.courseproject.dental.dto.appointment.AppointmentRequest;
 import edu.miu.cs.cs489.courseproject.dental.dto.auth.LoginRequest;
+import edu.miu.cs.cs489.courseproject.dental.dto.bill.DentalBillRequest;
+import edu.miu.cs.cs489.courseproject.dental.dto.bill.DentalBillStatusRequest;
 import edu.miu.cs.cs489.courseproject.dental.dto.patient.PatientRequest;
 import edu.miu.cs.cs489.courseproject.dental.repository.DentistRepository;
 import edu.miu.cs.cs489.courseproject.dental.repository.PatientRepository;
@@ -24,6 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,6 +37,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -152,6 +157,66 @@ class DentalSurgeryApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message", containsString("outstanding unpaid")));
+    }
+
+    @Test
+    void shouldManageBillsAndAllowSchedulingAfterPayment() throws Exception {
+        String token = login("HainingSong", "welcome1");
+        Patient patient = patientRepository.findByPatientNumber("P100").orElseThrow();
+        Dentist dentist = dentistRepository.findByDentistCode("D115").orElseThrow();
+        Surgery surgery = surgeryRepository.findBySurgeryNumber("S13").orElseThrow();
+
+        DentalBillRequest billRequest = new DentalBillRequest(
+                patient.getPatientId(),
+                null,
+                LocalDate.now(),
+                new BigDecimal("175.00"),
+                BillStatus.UNPAID,
+                "Balance created by billing API test"
+        );
+
+        MvcResult billResult = mockMvc.perform(post("/api/v1/bills")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(billRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.patient.patientNumber").value("P100"))
+                .andExpect(jsonPath("$.status").value("UNPAID"))
+                .andReturn();
+
+        Long billId = objectMapper.readTree(billResult.getResponse().getContentAsString())
+                .get("billId")
+                .asLong();
+
+        AppointmentRequest blockedRequest = new AppointmentRequest(
+                patient.getPatientId(),
+                dentist.getDentistId(),
+                surgery.getSurgeryId(),
+                LocalDate.now().plusDays(8),
+                LocalTime.of(9, 15),
+                "Should be blocked while bill is unpaid"
+        );
+
+        mockMvc.perform(post("/api/v1/appointments")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(blockedRequest)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message", containsString("outstanding unpaid")));
+
+        mockMvc.perform(patch("/api/v1/bills/{billId}/status", billId)
+                        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DentalBillStatusRequest(BillStatus.PAID))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("PAID"));
+
+        mockMvc.perform(post("/api/v1/appointments")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(blockedRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.patient.patientNumber").value("P100"));
     }
 
     @Test

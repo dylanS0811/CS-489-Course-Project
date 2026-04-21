@@ -2,11 +2,13 @@ package edu.miu.cs.cs489.courseproject.dental.service;
 
 import edu.miu.cs.cs489.courseproject.dental.domain.Address;
 import edu.miu.cs.cs489.courseproject.dental.domain.Appointment;
+import edu.miu.cs.cs489.courseproject.dental.domain.DentalBill;
 import edu.miu.cs.cs489.courseproject.dental.domain.Dentist;
 import edu.miu.cs.cs489.courseproject.dental.domain.Patient;
 import edu.miu.cs.cs489.courseproject.dental.domain.Surgery;
 import edu.miu.cs.cs489.courseproject.dental.dto.address.AddressResponse;
 import edu.miu.cs.cs489.courseproject.dental.dto.appointment.AppointmentResponse;
+import edu.miu.cs.cs489.courseproject.dental.dto.bill.DentalBillResponse;
 import edu.miu.cs.cs489.courseproject.dental.dto.dentist.DentistResponse;
 import edu.miu.cs.cs489.courseproject.dental.dto.patient.PatientResponse;
 import edu.miu.cs.cs489.courseproject.dental.dto.patient.PatientSummaryResponse;
@@ -85,6 +87,25 @@ public class MappingService {
                 toDentistResponse(appointment.getDentist()),
                 toSurgeryResponse(appointment.getSurgery()),
                 appointment.getBookedBy().getFullName()
+        );
+    }
+
+    public DentalBillResponse toDentalBillResponse(DentalBill dentalBill) {
+        Appointment appointment = dentalBill.getAppointment();
+        return new DentalBillResponse(
+                dentalBill.getBillId(),
+                toPatientSummary(dentalBill.getPatient()),
+                appointment == null ? null : appointment.getAppointmentId(),
+                appointment == null
+                        ? "Manual bill"
+                        : "%s %s with %s".formatted(
+                                appointment.getAppointmentDate(),
+                                appointment.getAppointmentTime(),
+                                appointment.getDentist().getFullName()),
+                dentalBill.getIssueDate(),
+                dentalBill.getAmount(),
+                dentalBill.getStatus(),
+                dentalBill.getDescription()
         );
     }
 }

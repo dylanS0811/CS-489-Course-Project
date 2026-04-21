@@ -6,7 +6,7 @@ BrightSmile ADS is a secure Spring Boot web application for managing dental surg
 
 | Requirement | Implementation |
 | --- | --- |
-| Creativity and originality | Complete branded appointment console with dashboard, patient search, scheduling, cancellation, and business-rule feedback. |
+| Creativity and originality | Complete branded appointment console with dashboard, patient search, billing, scheduling, cancellation, and business-rule feedback. |
 | Enterprise solution design | Layered Spring Boot modular monolith: Web/API, DTO, service, repository, domain, and database layers. |
 | Functionality and user experience | Static SPA served by Spring Boot at `/`, backed by JSON REST endpoints. |
 | Communication and time management | Project artefacts, demo script, and presentation outline are under `docs/`. |
@@ -68,6 +68,7 @@ The automated tests verify:
 - Dashboard counts
 - Patient registration through DTOs
 - Appointment scheduling
+- Billing workflow and payment-status updates
 - Unpaid-bill scheduling rejection
 - Dentist weekly appointment limit
 
@@ -110,6 +111,13 @@ Scheduling:
 - `POST /api/v1/appointments`
 - `PATCH /api/v1/appointments/{appointmentId}/status`
 - `DELETE /api/v1/appointments/{appointmentId}`
+
+Billing:
+
+- `GET /api/v1/bills`
+- `GET /api/v1/bills?status=UNPAID`
+- `POST /api/v1/bills`
+- `PATCH /api/v1/bills/{billId}/status`
 
 Directory/dashboard:
 
