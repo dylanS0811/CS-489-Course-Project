@@ -1,0 +1,7 @@
+.idea/
+target/
+tmp/
+submission/*.zip
+*.log
+.DS_Store
+~$*.pptx

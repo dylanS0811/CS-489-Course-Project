@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BrightSmile Dental Surgery Appointments</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+<main class="app-shell">
+    <aside class="sidebar">
+        <div class="brand-block">
+            <div class="brand-mark" aria-hidden="true">BS</div>
+            <div>
+                <h1>BrightSmile ADS</h1>
+                <p>Dental surgery appointment operations</p>
+            </div>
+        </div>
+
+        <form id="loginForm" class="login-panel">
+            <h2>Staff Login</h2>
+            <label>
+                Username
+                <input id="username" name="username" value="HainingSong" autocomplete="username" required>
+            </label>
+            <label>
+                Password
+                <input id="password" name="password" type="password" value="welcome1" autocomplete="current-password" required>
+            </label>
+            <button type="submit">Sign in</button>
+            <p class="demo-note">Demo accounts: HainingSong / welcome1, ethan.reed / welcome1</p>
+        </form>
+
+        <section id="userPanel" class="user-panel hidden">
+            <p id="userName">Signed in</p>
+            <p id="userRole">Role</p>
+            <button id="logoutButton" type="button">Sign out</button>
+        </section>
+    </aside>
+
+    <section class="workspace">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">CS489 Course Project</p>
+                <h2>Dental Surgery Appointment Console</h2>
+            </div>
+            <button id="refreshButton" type="button">Refresh</button>
+        </header>
+
+        <div id="message" class="message hidden"></div>
+
+        <nav class="tabs" aria-label="Workspace sections">
+            <button class="tab active" data-tab="dashboard" type="button">Dashboard</button>
+            <button class="tab" data-tab="appointments" type="button">Appointments</button>
+            <button class="tab" data-tab="patients" type="button">Patients</button>
+            <button class="tab" data-tab="newPatient" type="button">New Patient</button>
+        </nav>
+
+        <section id="dashboard" class="tab-panel active">
+            <div id="metricGrid" class="metric-grid"></div>
+            <div class="section-heading">
+                <h3>Upcoming Schedule</h3>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Dentist</th>
+                        <th>Surgery</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody id="upcomingRows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="appointments" class="tab-panel">
+            <form id="appointmentForm" class="form-grid">
+                <label>
+                    Patient
+                    <select id="appointmentPatient" required></select>
+                </label>
+                <label>
+                    Dentist
+                    <select id="appointmentDentist" required></select>
+                </label>
+                <label>
+                    Surgery
+                    <select id="appointmentSurgery" required></select>
+                </label>
+                <label>
+                    Date
+                    <input id="appointmentDate" type="date" required>
+                </label>
+                <label>
+                    Time
+                    <input id="appointmentTime" type="time" value="09:00" required>
+                </label>
+                <label class="wide-field">
+                    Reason
+                    <input id="appointmentReason" placeholder="Routine consultation">
+                </label>
+                <button type="submit">Schedule Appointment</button>
+            </form>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Dentist</th>
+                        <th>Surgery</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="appointmentRows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="patients" class="tab-panel">
+            <form id="searchForm" class="search-row">
+                <input id="patientSearch" placeholder="Search patient number, name, phone, city">
+                <button type="submit">Search</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Patient No</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                    </tr>
+                    </thead>
+                    <tbody id="patientRows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="newPatient" class="tab-panel">
+            <form id="patientForm" class="form-grid patient-form">
+                <label>
+                    Patient No
+                    <input id="patientNumber" placeholder="P130" required>
+                </label>
+                <label>
+                    First Name
+                    <input id="firstName" required>
+                </label>
+                <label>
+                    Last Name
+                    <input id="lastName" required>
+                </label>
+                <label>
+                    Phone
+                    <input id="phoneNumber" required>
+                </label>
+                <label>
+                    Email
+                    <input id="email" type="email" required>
+                </label>
+                <label>
+                    Date of Birth
+                    <input id="dateOfBirth" type="date" required>
+                </label>
+                <label class="wide-field">
+                    Street
+                    <input id="street" required>
+                </label>
+                <label>
+                    City
+                    <input id="city" value="Fairfield" required>
+                </label>
+                <label>
+                    State
+                    <input id="state" value="IA" required>
+                </label>
+                <label>
+                    ZIP
+                    <input id="zipCode" value="52556" required>
+                </label>
+                <button type="submit">Register Patient</button>
+            </form>
+        </section>
+    </section>
+</main>
+<script src="/assets/app.js"></script>
+</body>
+</html>
